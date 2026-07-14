@@ -41,7 +41,6 @@ class SiteConfig(models.Model):
 
 
 class AboutParagraph(models.Model):
-    _id = models.ObjectIdField()
     text = models.TextField("Parágrafo")
     highlight = models.BooleanField("Destaque (cor diferente)", default=False)
     order = models.PositiveIntegerField("Ordem", default=0)
