@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{{ config.site_name }}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --cream:#faf7f2;
+      --warm:#f0ebe1;
+      --gold:#b89a6a;
+      --gold-light:#d4b896;
+      --sage:#6b7c6e;
+      --dark:#2c2c2c;
+      --text:#4a4a4a;
+      --white:#ffffff;
+    }
+    html{scroll-behavior:smooth}
+    body{font-family:'Jost',sans-serif;color:var(--text);background:var(--white);font-weight:300}
+
+    /* ── NAV ── */
+    nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:1.2rem 3rem;display:flex;align-items:center;justify-content:space-between;transition:background .4s,padding .3s}
+    nav.scrolled{background:rgba(44,44,44,.95);padding:.9rem 3rem;backdrop-filter:blur(8px)}
+    .nav-logo{color:#fff;font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:600;letter-spacing:.05em;text-decoration:none}
+    .nav-links{list-style:none;display:flex;gap:2.5rem}
+    .nav-links a{color:rgba(255,255,255,.85);text-decoration:none;font-size:.78rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;transition:color .2s}
+    .nav-links a:hover,.nav-links a.active{color:var(--gold-light)}
+    .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px}
+    .hamburger span{display:block;width:22px;height:1.5px;background:#fff;transition:transform .3s,opacity .3s}
+    .hamburger.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+    .hamburger.open span:nth-child(2){opacity:0}
+    .hamburger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+    @media(max-width:768px){
+      nav{padding:1rem 1.5rem}
+      nav.scrolled{padding:.8rem 1.5rem}
+      .hamburger{display:flex}
+      .nav-links{display:none;position:fixed;inset:0;background:rgba(44,44,44,.97);flex-direction:column;align-items:center;justify-content:center;gap:2.5rem}
+      .nav-links.open{display:flex}
+      .nav-links a{font-size:1rem}
+    }
+
+    /* ── HERO ── */
+    #inicio{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--dark)}
+    .hero-bg{position:absolute;inset:0;background-size:cover;background-position:center top;
+      {% if config.hero_image %}background-image:url('{{ config.hero_image.url }}');{% endif %}
+      filter:brightness(.45)}
+    .hero-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.1) 0%,rgba(0,0,0,.5) 100%)}
+    .hero-inner{position:relative;z-index:1;display:flex;align-items:center;gap:4rem;max-width:1100px;padding:7rem 2rem 4rem;flex-wrap:wrap;justify-content:center}
+    .hero-profile{flex-shrink:0}
+    .hero-profile img{width:220px;height:280px;object-fit:cover;border-radius:2px;border:3px solid var(--gold);box-shadow:0 20px 60px rgba(0,0,0,.4)}
+    .hero-profile-placeholder{width:220px;height:280px;border:2px dashed var(--gold);border-radius:2px;display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:.8rem;text-align:center;padding:1rem}
+    .hero-text{text-align:left;max-width:500px}
+    @media(max-width:768px){.hero-text{text-align:center}.hero-inner{gap:2rem}}
+    .hero-eyebrow{color:var(--gold-light);font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;margin-bottom:1rem}
+    .hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2.8rem,6vw,4.5rem);font-weight:600;color:#fff;line-height:1.1;margin-bottom:.8rem}
+    .hero-sub{color:rgba(255,255,255,.75);font-size:clamp(.95rem,2vw,1.15rem);font-weight:300;letter-spacing:.04em;margin-bottom:2rem}
+    .hero-divider{width:50px;height:1px;background:var(--gold);margin-bottom:2rem}
+    @media(max-width:768px){.hero-divider{margin:0 auto 2rem}}
+    .btn-primary{display:inline-block;padding:.85rem 2.2rem;border:1px solid var(--gold);color:var(--gold-light);text-decoration:none;font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;font-weight:500;transition:background .2s,color .2s}
+    .btn-primary:hover{background:var(--gold);color:#fff}
+
+    /* ── SECTIONS ── */
+    section{padding:6rem 2rem}
+    .section-label{font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:.6rem}
+    .section-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,4vw,3rem);font-weight:600;color:var(--dark);margin-bottom:1rem}
+    .section-line{width:40px;height:1px;background:var(--gold);margin-bottom:2.5rem}
+
+    /* ── SOBRE ── */
+    #sobre{background:var(--cream)}
+    .about-wrap{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 2fr;gap:5rem;align-items:start}
+    @media(max-width:900px){.about-wrap{grid-template-columns:1fr;gap:3rem}}
+    .about-left{}
+    .about-photo-frame{position:relative;margin-bottom:2rem}
+    .about-photo-frame img{width:100%;max-width:320px;aspect-ratio:3/4;object-fit:cover;display:block;box-shadow:12px 12px 0 var(--gold-light)}
+    .about-photo-placeholder{width:100%;max-width:320px;aspect-ratio:3/4;background:var(--warm);display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:.85rem;box-shadow:12px 12px 0 var(--gold-light)}
+    .about-meta{margin-bottom:1.5rem}
+    .about-meta p{font-size:.88rem;margin-bottom:.35rem}
+    .about-meta strong{color:var(--dark);font-weight:500}
+    .social-row{display:flex;gap:.75rem;margin-top:1rem}
+    .social-btn{width:38px;height:38px;border:1px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--gold);text-decoration:none;transition:background .2s,color .2s;flex-shrink:0}
+    .social-btn:hover{background:var(--gold);color:#fff}
+    .about-right{}
+    .about-paras p{font-size:.93rem;line-height:1.85;margin-bottom:1.1rem;color:var(--text)}
+    .about-paras p.highlight{color:var(--sage);font-style:italic}
+    .about-quote-block{margin-top:2.5rem;padding:1.5rem 2rem;border-left:3px solid var(--gold);background:var(--warm)}
+    .about-quote-block blockquote{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-style:italic;color:var(--dark);margin-bottom:.5rem}
+    .about-quote-block cite{font-size:.8rem;color:var(--gold);letter-spacing:.05em}
+
+    /* ── SERVIÇOS ── */
+    #servicos{background:var(--white)}
+    .services-header{max-width:1100px;margin:0 auto 3.5rem}
+    .services-grid{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:2rem}
+    .svc-card{padding:2.5rem 2rem;border:1px solid #e8e0d4;transition:border-color .2s,box-shadow .2s;background:#fff}
+    .svc-card:hover{border-color:var(--gold);box-shadow:0 8px 32px rgba(184,154,106,.1)}
+    .svc-icon{margin-bottom:1.5rem}
+    .svc-icon img{height:56px;width:56px;object-fit:contain}
+    .svc-icon-placeholder{width:56px;height:56px;background:var(--warm);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.4rem}
+    .svc-card h3{font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:600;color:var(--dark);margin-bottom:1rem}
+    .svc-paras p{font-size:.86rem;line-height:1.8;color:var(--text);margin-bottom:.6rem}
+
+    /* ── PORTFOLIO CTA ── */
+    #portfolio{position:relative;text-align:center;color:#fff;padding:7rem 2rem;background:var(--sage)}
+    .portfolio-bg{position:absolute;inset:0;background-size:cover;background-position:center;
+      {% if config.portfolio_bg_image %}background-image:url('{{ config.portfolio_bg_image.url }}');{% endif %}
+      filter:brightness(.3)}
+    .portfolio-inner{position:relative;z-index:1;max-width:600px;margin:0 auto}
+    .portfolio-inner .section-label{color:var(--gold-light)}
+    .portfolio-inner .section-title{color:#fff}
+    .portfolio-inner p{color:rgba(255,255,255,.8);font-size:.93rem;line-height:1.7;margin-bottom:2rem}
+    .btn-gold{display:inline-block;padding:.9rem 2.5rem;background:var(--gold);color:#fff;text-decoration:none;font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;font-weight:500;transition:background .2s,transform .2s}
+    .btn-gold:hover{background:var(--gold-light);transform:translateY(-2px)}
+
+    /* ── FOTOS ── */
+    #fotos{background:var(--cream)}
+    .fotos-header{max-width:1100px;margin:0 auto 3rem}
+    .photos-grid{max-width:1100px;margin:0 auto;columns:3 220px;gap:1rem}
+    .photos-grid img{width:100%;display:block;margin-bottom:1rem;object-fit:cover;transition:opacity .2s}
+    .photos-grid img:hover{opacity:.88}
+    @media(max-width:500px){.photos-grid{columns:2 150px}}
+    .no-photos{color:#999;font-size:.9rem}
+
+    /* ── CONTATOS ── */
+    #contatos{background:var(--dark);color:#fff}
+    .contact-wrap{max-width:900px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start}
+    @media(max-width:700px){.contact-wrap{grid-template-columns:1fr;gap:3rem}}
+    .contact-left .section-label{color:var(--gold-light)}
+    .contact-left .section-title{color:#fff}
+    .contact-left .section-line{background:var(--gold)}
+    .contact-paras p{font-size:.9rem;line-height:1.8;color:rgba(255,255,255,.7);margin-bottom:.9rem}
+    .contact-right{}
+    .contact-item{display:flex;align-items:flex-start;gap:.9rem;margin-bottom:1.2rem}
+    .contact-item svg{color:var(--gold);flex-shrink:0;margin-top:2px}
+    .contact-item span{font-size:.88rem;color:rgba(255,255,255,.75);line-height:1.6}
+    .social-row-dark{display:flex;gap:.75rem;margin-top:2rem}
+    .social-btn-dark{width:38px;height:38px;border:1px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--gold);text-decoration:none;transition:background .2s,color .2s}
+    .social-btn-dark:hover{background:var(--gold);color:#fff}
+
+    /* ── FOOTER ── */
+    footer{background:#1a1a1a;text-align:center;padding:1.5rem;font-size:.75rem;color:rgba(255,255,255,.35);letter-spacing:.05em}
+
+    /* ── BACK TO TOP ── */
+    #backTop{position:fixed;bottom:2rem;right:2rem;z-index:999;width:40px;height:40px;background:var(--gold);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .3s;box-shadow:0 4px 16px rgba(0,0,0,.2)}
+    #backTop.visible{opacity:1}
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a class="nav-logo" href="#inicio">{{ config.site_name }}</a>
+  <button class="hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#inicio">Início</a></li>
+    <li><a href="#sobre">Sobre</a></li>
+    <li><a href="#servicos">Serviços</a></li>
+    <li><a href="#fotos">Fotos</a></li>
+    <li><a href="#contatos">Contatos</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="inicio">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-inner">
+    <div class="hero-profile">
+      {% if config.hero_profile_image %}
+        <img src="{{ config.hero_profile_image.url }}" alt="{{ config.about_name }}"/>
+      {% else %}
+        <div class="hero-profile-placeholder">Adicione uma foto no painel admin</div>
+      {% endif %}
+    </div>
+    <div class="hero-text">
+      <p class="hero-eyebrow">Doula &amp; Educadora Perinatal</p>
+      <h1 class="hero-title">{{ config.hero_title }}</h1>
+      <div class="hero-divider"></div>
+      <p class="hero-sub">{{ config.hero_subtitle }}</p>
+      {% if config.hero_cta_text %}
+        <a class="btn-primary" href="#sobre">{{ config.hero_cta_text }}</a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<!-- SOBRE -->
+<section id="sobre">
+  <div class="about-wrap">
+    <div class="about-left">
+      <div class="about-photo-frame">
+        {% if config.about_photo %}
+          <img src="{{ config.about_photo.url }}" alt="{{ config.about_name }}"/>
+        {% else %}
+          <div class="about-photo-placeholder">Adicione sua foto no painel admin</div>
+        {% endif %}
+      </div>
+      <div class="about-meta">
+        <p><strong>Nome:</strong> {{ config.about_name }}</p>
+        <p><strong>Telefone:</strong> {{ config.about_phone }}</p>
+      </div>
+      <div class="social-row">
+        <a class="social-btn" href="{{ config.about_whatsapp }}" target="_blank" title="WhatsApp">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.126.556 4.12 1.527 5.849L.057 23.999l6.305-1.654A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.015-1.374l-.36-.214-3.732.979 1-3.642-.235-.374A9.818 9.818 0 0112 2.182c5.424 0 9.818 4.394 9.818 9.818 0 5.425-4.394 9.818-9.818 9.818z"/></svg>
+        </a>
+        <a class="social-btn" href="{{ config.about_instagram }}" target="_blank" title="Instagram">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="about-right">
+      <p class="section-label">Quem sou eu</p>
+      <h2 class="section-title">Sobre mim</h2>
+      <div class="section-line"></div>
+      <div class="about-paras">
+        {% for para in about_paragraphs %}
+          <p {% if para.highlight %}class="highlight"{% endif %}>{{ para.text }}</p>
+        {% empty %}
+          <p>Nenhum parágrafo cadastrado ainda. Adicione no painel admin.</p>
+        {% endfor %}
+      </div>
+      {% if config.about_quote %}
+      <div class="about-quote-block">
+        <blockquote>{{ config.about_quote }}</blockquote>
+        <cite>{{ config.about_quote_author }}</cite>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<!-- SERVIÇOS -->
+<section id="servicos">
+  <div class="services-header">
+    <p class="section-label">O que ofereço</p>
+    <h2 class="section-title">{{ config.services_title }}</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="services-grid">
+    {% for s in services %}
+    <div class="svc-card">
+      <div class="svc-icon">
+        {% if s.icon %}<img src="{{ s.icon.url }}" alt="{{ s.title }}"/>
+        {% else %}<div class="svc-icon-placeholder">🌸</div>{% endif %}
+      </div>
+      <h3>{{ s.title }}</h3>
+      <div class="svc-paras">
+        {% for p in s.paragraphs.all %}
+          <p>{{ p.text }}</p>
+        {% endfor %}
+      </div>
+    </div>
+    {% empty %}
+      <p style="color:#999">Nenhum serviço cadastrado ainda.</p>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- PORTFOLIO CTA -->
+<section id="portfolio">
+  <div class="portfolio-bg"></div>
+  <div class="portfolio-inner">
+    <p class="section-label">Portfólio</p>
+    <h2 class="section-title">{{ config.portfolio_title }}</h2>
+    <div class="section-line" style="margin:0 auto 2rem"></div>
+    <p>{{ config.portfolio_text }}</p>
+    {% if config.portfolio_file %}
+      <a class="btn-gold" href="{% url 'download_portfolio' %}">{{ config.portfolio_button_text }}</a>
+    {% else %}
+      <span style="color:rgba(255,255,255,.4);font-size:.85rem">Portfólio em breve</span>
+    {% endif %}
+  </div>
+</section>
+
+<!-- FOTOS -->
+<section id="fotos">
+  <div class="fotos-header">
+    <p class="section-label">Galeria</p>
+    <h2 class="section-title">Fotos</h2>
+    <div class="section-line"></div>
+  </div>
+  {% if photos %}
+    <div class="photos-grid" style="max-width:1100px;margin:0 auto">
+      {% for photo in photos %}
+        <img src="{{ photo.image.url }}" alt="{{ photo.caption|default:'Foto' }}"/>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="no-photos" style="max-width:1100px;margin:0 auto">Nenhuma foto cadastrada ainda. Adicione no painel admin.</p>
+  {% endif %}
+</section>
+
+<!-- CONTATOS -->
+<section id="contatos">
+  <div class="contact-wrap">
+    <div class="contact-left">
+      <p class="section-label">Fale comigo</p>
+      <h2 class="section-title">Entrar em contato</h2>
+      <div class="section-line"></div>
+      <div class="contact-paras">
+        {% for para in contact_paragraphs %}
+          <p>{{ para.text }}</p>
+        {% empty %}
+          <p style="color:rgba(255,255,255,.5)">Adicione parágrafos no painel admin.</p>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="contact-right">
+      <div class="contact-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <span>{{ config.contact_address }}</span>
+      </div>
+      <div class="contact-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.02 1.18a2 2 0 012-2.18h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 6.91a16 16 0 006.47 6.47l1.37-1.37a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+        <span>{{ config.contact_phone }}</span>
+      </div>
+      <div class="contact-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        <span>{{ config.contact_email }}</span>
+      </div>
+      <div class="social-row-dark">
+        <a class="social-btn-dark" href="{{ config.about_whatsapp }}" target="_blank" title="WhatsApp">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.126.556 4.12 1.527 5.849L.057 23.999l6.305-1.654A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.015-1.374l-.36-.214-3.732.979 1-3.642-.235-.374A9.818 9.818 0 0112 2.182c5.424 0 9.818 4.394 9.818 9.818 0 5.425-4.394 9.818-9.818 9.818z"/></svg>
+        </a>
+        <a class="social-btn-dark" href="{{ config.about_instagram }}" target="_blank" title="Instagram">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>© 2024 {{ config.site_name }} — Todos os direitos reservados</footer>
+
+<button id="backTop" title="Voltar ao topo">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+</button>
+
+<script>
+  const burger=document.getElementById('hamburger'),nav=document.getElementById('navLinks');
+  burger.addEventListener('click',()=>{burger.classList.toggle('open');nav.classList.toggle('open')});
+  nav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{burger.classList.remove('open');nav.classList.remove('open')}));
+  const navbar=document.getElementById('navbar'),backTop=document.getElementById('backTop');
+  window.addEventListener('scroll',()=>{
+    navbar.classList.toggle('scrolled',scrollY>60);
+    backTop.classList.toggle('visible',scrollY>400);
+  });
+  backTop.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+  const obs=new IntersectionObserver(es=>es.forEach(e=>{
+    const l=document.querySelector(`.nav-links a[href="#${e.target.id}"]`);
+    if(l)l.classList.toggle('active',e.isIntersecting);
+  }),{threshold:.35});
+  document.querySelectorAll('section[id]').forEach(s=>obs.observe(s));
+</script>
+</body>
+</html>
