@@ -69,7 +69,7 @@ if MONGODB_URI:
             'ENFORCE_SCHEMA': False,
             'CLIENT': {
                 'host': MONGODB_URI,
-                'authMechanism': 'SCRAM-SHA-1'
+                #'authMechanism': 'SCRAM-SHA-1'
             }
         }
     }
