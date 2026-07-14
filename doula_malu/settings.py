@@ -1,19 +1,15 @@
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+import dj_database_url # Importação necessária
 
-# Carrega as variáveis do arquivo .env (se você estiver rodando localmente)
+# Carrega as variáveis do arquivo .env
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Puxa a chave secreta do ambiente ou usa a padrão localmente
 SECRET_KEY = os.environ.get('SECRET_KEY')
-
-# O DEBUG será True localmente, mas False na Vercel se você configurar a variável DEBUG=False lá
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
-
-# Mantém liberado para qualquer host (você pode restringir depois para o domínio da Vercel)
 ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
@@ -28,7 +24,6 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    # WhiteNoise adicionado logo após o SecurityMiddleware
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -56,32 +51,15 @@ TEMPLATES = [{
 
 WSGI_APPLICATION = 'doula_malu.wsgi.application'
 
-
-# --- CONFIGURAÇÃO DO BANCO DE DADOS ---
-MONGODB_URI = os.environ.get('MONGODB_URI')
-
-if MONGODB_URI:
-    # Configuração Produção / Atlas (Djongo)
-    DATABASES = {
-        'default': {
-            'ENGINE': 'djongo',
-            'NAME': 'doula_malu_db', # Nome do seu banco de dados no MongoDB
-            'ENFORCE_SCHEMA': False,
-            'CLIENT': {
-                'host': MONGODB_URI,
-                #'authMechanism': 'SCRAM-SHA-1'
-            }
-        }
-    }
-else:
-    # Configuração Local (SQLite3)
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
-
+# --- CONFIGURAÇÃO DO BANCO DE DADOS (POSTGRESQL) ---
+# A variável POSTGRES_URL é fornecida automaticamente pela Vercel
+DATABASES = {
+    'default': dj_database_url.config(
+        default=os.environ.get('POSTGRES_URL', 'sqlite:///' + str(BASE_DIR / 'db.sqlite3')),
+        conn_max_age=600,
+        ssl_require=True
+    )
+}
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
@@ -93,9 +71,7 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'pt-br'
 TIME_ZONE = 'America/Fortaleza'
 USE_I18N = True
-
-# O USE_TZ deve ser False para evitar que o Djongo quebre ao salvar datas (DateTimeField)
-USE_TZ = False 
+USE_TZ = True # Com Postgres, é recomendável manter True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
@@ -104,6 +80,3 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# Admin customization
-JAZZMIN_SETTINGS = None
